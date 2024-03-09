@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "target": "es2020",
+    "lib": ["esnext", "dom"],
+    "strict": true,
+    "types": ["node"],
+    "baseUrl": "src",
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "module": "es2022",
+    "skipLibCheck": true,
+    "rootDir": "src",
+    "emitDeclarationOnly": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": false
+  },
+  "include": ["src/**/*"]
+}

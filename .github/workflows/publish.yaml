@@ -1,0 +1,72 @@
+name: "🚀 Publish to npm"
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  publish-package:
+    name: "🚀 Publish the package"
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: write
+      pull-requests: write
+      issues: write
+      checks: read
+      actions: write
+
+    steps:
+      - name: "✨ Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "🔧 Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.0
+
+      - name: "🔧 Set up pnpm"
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: false
+
+      - name: "📂 Get pnpm store directory"
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: "🔄️ Setup pnpm cache"
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: "📦 Install packages"
+        run: pnpm i
+
+      - name: "🧪 Run tests for package"
+        run: pnpm test
+
+      - name: "📝 Prep commit message"
+        run: |
+          echo "PACKAGE_NAME=$(pnpm changeset status --output=release.json && jq -r '.releases[0].name' release.json && rm release.json)" >> "$GITHUB_ENV"
+          echo "VERSION=$(pnpm changeset status --output=release.json && jq -r '.releases[0].newVersion' release.json && rm release.json)" >> "$GITHUB_ENV"
+
+      - name: "🚀 Create release pr and publish to npm"
+        id: changesets
+        uses: changesets/action@v1.4.5
+        with:
+          title: '🚀 Release ${{env.PACKAGE_NAME}}@${{env.VERSION}}'
+          commit: '🚀 Release ${{env.PACKAGE_NAME}}@${{env.VERSION}}'
+          createGithubReleases: true
+          setupGitUser: true
+          version: pnpm changeset-version
+          publish: pnpm changeset-release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
