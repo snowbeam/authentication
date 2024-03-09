@@ -1,0 +1,45 @@
+name: "🧪 Authenticaion development and testing"
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  test-package:
+    name: "🧪 Test and build package"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "✨ Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "🔧 Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.0
+
+      - name: "🔧 Set up pnpm"
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: false
+
+      - name: "📂 Get pnpm store directory"
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: "🔄️ Setup pnpm cache"
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: "📦 Install packages"
+        run: pnpm i
+
+      - name: "🧪 Run tests for package"
+        run: pnpm test

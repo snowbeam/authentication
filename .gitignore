@@ -1,0 +1,15 @@
+# deps
+node_modules
+
+# build
+dist
+
+# pnpm
+.pnpm-store
+.pnpm
+
+# env
+.env
+
+# coverage
+coverage
