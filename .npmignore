@@ -11,3 +11,5 @@ __tests__
 .changeset
 tsup.config.js
 tsconfig.json
+coverage
+pnpm-lock.yaml

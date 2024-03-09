@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "module": "es2022",
+    "module": "esnext",
     "skipLibCheck": true,
     "rootDir": "src",
     "emitDeclarationOnly": true,
